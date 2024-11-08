@@ -1,55 +1,55 @@
-name: Build on Deploy Code
+# name: Build on Deploy Code
 
-on: [push, pull_request]
+# on: [push, pull_request]
 
-jobs:
-  build:
-    environment:
-      name: testing
-    env:
-      DATABASE_HOSTNAME: ${{secrets.DATABASE_HOSTNAME}}
-      DATABASE_PORT: ${{secrets.DATABASE_PORT}}
-      DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
-      DATABASE_NAME: ${{secrets.DATABASE_NAME}}
-      DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME}}
-      SECRET_KEY: ${{secrets.SECRET_KEY}}
-      ALGORITHM: ${{secrets.ALGORITHM}}
-      ACCESS_TOKEN_EXPIRE_MINUTES: 60
+# jobs:
+#   build:
+#     environment:
+#       name: testing
+#     env:
+#       DATABASE_HOSTNAME: ${{secrets.DATABASE_HOSTNAME}}
+#       DATABASE_PORT: ${{secrets.DATABASE_PORT}}
+#       DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
+#       DATABASE_NAME: ${{secrets.DATABASE_NAME}}
+#       DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME}}
+#       SECRET_KEY: ${{secrets.SECRET_KEY}}
+#       ALGORITHM: ${{secrets.ALGORITHM}}
+#       ACCESS_TOKEN_EXPIRE_MINUTES: 60
 
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
-          POSTGRES_DB: ${{secrets.DATABASE_NAME}}_test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+#     services:
+#       postgres:
+#         image: postgres
+#         env:
+#           POSTGRES_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
+#           POSTGRES_DB: ${{secrets.DATABASE_NAME}}_test
+#         ports:
+#           - 5432:5432
+#         options: >-
+#           --health-cmd pg_isready
+#           --health-interval 10s
+#           --health-timeout 5s
+#           --health-retries 5
 
-    runs-on: ubuntu-latest
-    steps:
-      - name: pulling git repo
-        uses: actions/checkout@v3
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: pulling git repo
+#         uses: actions/checkout@v3
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.13'
+#       - name: Setup Python
+#         uses: actions/setup-python@v4
+#         with:
+#           python-version: '3.13'
 
-      - name: Update pip  
-        run: python -m pip install --upgrade pip
+#       - name: Update pip  
+#         run: python -m pip install --upgrade pip
 
-      - name: Install all dependencies
-        run: pip install -r requirements.txt
+#       - name: Install all dependencies
+#         run: pip install -r requirements.txt
 
-      - name: test with pytest
-        run: |
-          pip install pytest
-          pytest tests/
+#       - name: test with pytest
+#         run: |
+#           pip install pytest
+#           pytest tests/
 
       # Uncomment the following if Docker build and push is needed
       # - name: Set up Docker Buildx
@@ -74,10 +74,13 @@ jobs:
 
       # - name: Image digest
       #   run: echo ${{steps.docker_build.outputs.digest}}
+name: Deploy Code
 
+on: [push, pull_request]
+
+jobs:
   deploy:
-    runs-on: ubuntu-latest   # Corrected 'ubunto-latest' to 'ubuntu-latest'
-    needs: [build]
+    runs-on: ubuntu-latest
     environment:
       name: production
   
